@@ -12,7 +12,7 @@ int main()
 
         ClearBackground(RAYWHITE);
 
-        DrawText("Test - DEV MAXION", 300, 280, 30, BLUE);
+        DrawText("Raylib Works!", 300, 280, 30, BLACK);
 
         EndDrawing();
     }
