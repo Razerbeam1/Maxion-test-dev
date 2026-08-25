@@ -13,4 +13,6 @@ public:
 
     void Update(int screenWidth, int screenHeight);
     void Draw();
+
+    Vector2 GetPosition() const;
 };
