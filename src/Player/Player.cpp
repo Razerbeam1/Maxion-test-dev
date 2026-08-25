@@ -4,13 +4,19 @@ Player::Player(float x, float y)
 {
     position = {x, y};
     speed = 250.0f;
+
+    // Health
+    maxHealth = 100.0f;
+    health = maxHealth;
+
+    // Inventory
+    hasHealItem = false;
 }
 
 void Player::Update(int screenWidth, int screenHeight)
 {
     float deltaTime = GetFrameTime();
 
-    // Movement
     if (IsKeyDown(KEY_W))
     {
         position.y -= speed * deltaTime;
@@ -66,4 +72,28 @@ void Player::Draw()
         40,
         BLUE
     );
+}
+
+Vector2 Player::GetPosition() const
+{
+    return position;
+}
+
+float Player::GetHealth() const
+{
+    return health;
+}
+
+float Player::GetMaxHealth() const
+{
+    return maxHealth;
+}
+
+bool Player::HasHealItem() const
+{
+    return hasHealItem;
+}
+void Player::AddHealItem()
+{
+    hasHealItem = true;
 }

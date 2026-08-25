@@ -3,9 +3,9 @@
 InteractionObject::InteractionObject(
     float x,
     float y,
-    float range
+    float interactionRange
 )
 {
     position = {x, y};
-    interactionRange = range;
+    this->interactionRange = interactionRange;
 }
