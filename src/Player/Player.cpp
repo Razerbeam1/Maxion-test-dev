@@ -67,3 +67,7 @@ void Player::Draw()
         BLUE
     );
 }
+Vector2 Player::GetPosition() const
+{
+    return position;
+}

@@ -1,0 +1,46 @@
+#include "HealItem.h"
+#include "raymath.h"
+
+HealItem::HealItem(float x, float y)
+    : InteractionObject(x, y, 80.0f)
+{
+    collected = false;
+}
+
+bool HealItem::CanInteract(Vector2 playerPosition)
+{
+    if (collected)
+    {
+        return false;
+    }
+
+    float distance = Vector2Distance(
+        position,
+        playerPosition
+    );
+
+    return distance <= interactionRange;
+}
+
+void HealItem::Interact()
+{
+    if (!collected)
+    {
+        collected = true;
+    }
+}
+
+void HealItem::Draw()
+{
+    if (collected)
+    {
+        return;
+    }
+
+    DrawCircle(
+        (int)position.x,
+        (int)position.y,
+        15,
+        GREEN
+    );
+}

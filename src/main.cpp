@@ -1,25 +1,56 @@
 #include "raylib.h"
+
 #include "Player/Player.h"
+#include "Interaction/Item/HealItem.h"
 
 int main()
 {
     const int screenWidth = 1280;
     const int screenHeight = 720;
 
-    SetTargetFPS(60);
     InitWindow(
         screenWidth,
         screenHeight,
         "Test-dev"
     );
-    Player player(380, 280);
+
+    SetTargetFPS(60);
+
+    // Random seed
+    SetRandomSeed((unsigned int)GetTime());
+
+    // Random Player position
+    float playerX = (float)GetRandomValue(0, screenWidth - 40);
+    float playerY = (float)GetRandomValue(0, screenHeight - 40);
+
+    Player player(playerX, playerY);
+
+    // Random Heal Item position
+    float itemX = (float)GetRandomValue(15, screenWidth - 15);
+    float itemY = (float)GetRandomValue(15, screenHeight - 15);
+
+    HealItem healItem(itemX, itemY);
 
     while (!WindowShouldClose())
     {
+        // =========================
         // UPDATE
+        // =========================
+
         player.Update(screenWidth, screenHeight);
 
+        if (healItem.CanInteract(player.GetPosition()))
+        {
+            if (IsKeyPressed(KEY_E))
+            {
+                healItem.Interact();
+            }
+        }
+
+        // =========================
         // DRAW
+        // =========================
+
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
@@ -40,7 +71,21 @@ int main()
             BLACK
         );
 
+        healItem.Draw();
+
         player.Draw();
+
+        // Interaction UI
+        if (healItem.CanInteract(player.GetPosition()))
+        {
+            DrawText(
+                "[E] Collect",
+                (int)itemX - 45,
+                (int)itemY - 40,
+                20,
+                BLACK
+            );
+        }
 
         EndDrawing();
     }
