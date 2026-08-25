@@ -1,7 +1,7 @@
 #include "raylib.h"
-
 #include "Player/Player.h"
 #include "Interaction/Item/HealItem.h"
+#include "UI/HUD.h"
 
 int main()
 {
@@ -15,7 +15,7 @@ int main()
     );
 
     SetTargetFPS(60);
-
+    
     // Random seed
     SetRandomSeed((unsigned int)GetTime());
 
@@ -30,6 +30,8 @@ int main()
     float itemY = (float)GetRandomValue(15, screenHeight - 15);
 
     HealItem healItem(itemX, itemY);
+
+    HUD hud;
 
     while (!WindowShouldClose())
     {
@@ -54,14 +56,14 @@ int main()
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
-
         DrawText(
-            "WASD - Move",
-            20,
+        "WASD - Move",
+            1000,
             20,
             20,
             BLACK
         );
+        
 
         DrawRectangleLines(
             0,
@@ -73,7 +75,7 @@ int main()
 
         healItem.Draw();
 
-        player.Draw();
+                player.Draw();
 
         // Interaction UI
         if (healItem.CanInteract(player.GetPosition()))
@@ -86,6 +88,16 @@ int main()
                 BLACK
             );
         }
+
+        // HUD
+        hud.DrawHealth(
+            player.GetHealth(),
+            player.GetMaxHealth()
+        );
+
+        hud.DrawInventory(
+            player.HasHealItem()
+        );
 
         EndDrawing();
     }
