@@ -93,3 +93,7 @@ bool Player::HasHealItem() const
 {
     return hasHealItem;
 }
+void Player::AddHealItem()
+{
+    hasHealItem = true;
+}

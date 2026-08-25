@@ -1,4 +1,5 @@
 #include "HealItem.h"
+#include "../../Player/Player.h"
 #include "raymath.h"
 
 HealItem::HealItem(float x, float y)
@@ -22,12 +23,16 @@ bool HealItem::CanInteract(Vector2 playerPosition)
     return distance <= interactionRange;
 }
 
-void HealItem::Interact()
+void HealItem::Interact(Player& player)
 {
-    if (!collected)
+    if (collected)
     {
-        collected = true;
+        return;
     }
+
+    player.AddHealItem();
+
+    collected = true;
 }
 
 void HealItem::Draw()

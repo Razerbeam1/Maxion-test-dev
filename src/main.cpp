@@ -45,7 +45,7 @@ int main()
         {
             if (IsKeyPressed(KEY_E))
             {
-                healItem.Interact();
+                healItem.Interact(player);
             }
         }
 
