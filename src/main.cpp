@@ -3,6 +3,7 @@
 #include "Player/Player.h"
 #include "Interaction/Item/ReviveItem.h"
 #include "UI/HUD.h"
+#include "Test/Dummy/DummyPlayer.h"
 
 int main()
 {
@@ -39,6 +40,12 @@ int main()
         playerX,
         playerY
     );
+    DummyPlayer dummy(
+        700,
+        400
+    );
+
+    
 
     // Random Revive Item position
     float itemX =
@@ -105,6 +112,18 @@ int main()
         reviveItem.Draw();
 
         player.Draw();
+        dummy.Draw();
+
+        if (dummy.CanRevive(player.GetPosition()))
+        {
+            DrawText(
+            "[Hold E] Revive",
+            (int)dummy.GetPosition().x - 35,
+            (int)dummy.GetPosition().y + 50,
+            20,
+            BLACK
+        );
+        }
 
         // Interaction UI
         if (
@@ -138,4 +157,5 @@ int main()
     CloseWindow();
 
     return 0;
+    
 }
