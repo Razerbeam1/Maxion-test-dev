@@ -3,13 +3,13 @@
 class PlayerInventory
 {
 private:
-    bool hasHealItem;
+    bool hasReviveItem;
 
 public:
     PlayerInventory();
 
-    bool HasHealItem() const;
+    bool HasReviveItem() const;
 
-    void AddHealItem();
-    void RemoveHealItem();
+    void AddReviveItem();
+    void RemoveReviveItem();
 };

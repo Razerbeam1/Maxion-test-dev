@@ -1,8 +1,8 @@
 #pragma once
 
-#include "raylib.h"
+#include "../../Core/Vector2D.h"
 
 struct PlayerData
 {
-    Vector2 position;
+    Vector2D position;
 };
