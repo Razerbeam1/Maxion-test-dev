@@ -5,53 +5,13 @@ PlayerMovement::PlayerMovement(float speed)
     this->speed = speed;
 }
 
-void PlayerMovement::Update(
-    Vector2& position,
-    int screenWidth,
-    int screenHeight
-)
+void PlayerMovement::Move(Vector2D& position, float inputX, float inputY, float deltaTime,
+                          float arenaWidth, float arenaHeight, float playerSize) const
 {
-    float deltaTime = GetFrameTime();
-
-    if (IsKeyDown(KEY_W))
-    {
-        position.y -= speed * deltaTime;
-    }
-
-    if (IsKeyDown(KEY_S))
-    {
-        position.y += speed * deltaTime;
-    }
-
-    if (IsKeyDown(KEY_A))
-    {
-        position.x -= speed * deltaTime;
-    }
-
-    if (IsKeyDown(KEY_D))
-    {
-        position.x += speed * deltaTime;
-    }
-
-    const float playerSize = 40.0f;
-
-    if (position.x < 0.0f)
-    {
-        position.x = 0.0f;
-    }
-
-    if (position.x > screenWidth - playerSize)
-    {
-        position.x = screenWidth - playerSize;
-    }
-
-    if (position.y < 0.0f)
-    {
-        position.y = 0.0f;
-    }
-
-    if (position.y > screenHeight - playerSize)
-    {
-        position.y = screenHeight - playerSize;
-    }
+    position.x += inputX * speed * deltaTime;
+    position.y += inputY * speed * deltaTime;
+    if (position.x < 0.0f) position.x = 0.0f;
+    if (position.x > arenaWidth - playerSize) position.x = arenaWidth - playerSize;
+    if (position.y < 0.0f) position.y = 0.0f;
+    if (position.y > arenaHeight - playerSize) position.y = arenaHeight - playerSize;
 }

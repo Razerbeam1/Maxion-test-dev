@@ -1,9 +1,9 @@
-#include "HealItem.h"
+#include "ReviveItem.h"
 
 #include "../../Player/Player.h"
 #include "raymath.h"
 
-HealItem::HealItem(float x, float y)
+ReviveItem::ReviveItem(float x, float y)
     : Item(
         x,
         y,
@@ -12,7 +12,7 @@ HealItem::HealItem(float x, float y)
 {
 }
 
-bool HealItem::CanInteract(
+bool ReviveItem::CanInteract(
     Vector2 playerPosition
 )
 {
@@ -29,7 +29,7 @@ bool HealItem::CanInteract(
     return distance <= interactionRange;
 }
 
-void HealItem::Interact(
+void ReviveItem::Interact(
     Player& player
 )
 {
@@ -38,12 +38,12 @@ void HealItem::Interact(
         return;
     }
 
-    player.AddHealItem();
+    player.AddReviveItem();
 
     collected = true;
 }
 
-void HealItem::Draw()
+void ReviveItem::Draw()
 {
     if (collected)
     {
