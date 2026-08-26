@@ -83,7 +83,7 @@ void GameRenderer::DrawPlayerPanel(const NetworkPlayerSnapshot& player, int y) c
     DrawRectangle(975, y + 48, 190, 13, {37, 55, 70, 255});
     DrawRectangle(975, y + 48, static_cast<int>(190 * player.health / player.maxHealth), 13, SKYBLUE);
     DrawText(TextFormat("%.0f / %.0f", player.health, player.maxHealth), 1080, y + 65, 13, LIGHTGRAY);
-    DrawText(player.hasReviveItem ? "REVIVE KIT: READY" : "REVIVE KIT: EMPTY", 975, y + 65, 14, player.hasReviveItem ? GOLD : GRAY);
+    DrawText(player.hasReviveItem ? "REVIVE KIT: READY" : "REVIVE KIT: EMPTY", 975, y + 40, 8, player.hasReviveItem ? GOLD : GRAY);
 }
 
 void GameRenderer::UpdateEvents(const NetworkMatchSnapshot& snapshot)
