@@ -47,4 +47,5 @@ public:
 
     // State
     PlayerState GetState() const;
+    void Revive();
 };

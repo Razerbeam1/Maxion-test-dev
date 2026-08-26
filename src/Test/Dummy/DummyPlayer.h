@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 
 #include "raylib.h"
 
@@ -9,6 +9,8 @@ private:
 
     float reviveRange;
 
+    bool isDowned;
+
 public:
     DummyPlayer(float x, float y);
 
@@ -17,4 +19,8 @@ public:
     Vector2 GetPosition() const;
 
     bool CanRevive(Vector2 playerPosition) const;
-};
+
+    bool IsDowned() const;
+
+    void Revive();
+};*/

@@ -1,7 +1,7 @@
 #include "ReviveSystem.h"
 
 #include "../Player/Player.h"
-#include "../Test/Dummy/DummyPlayer.h"
+#include "raymath.h"
 
 ReviveSystem::ReviveSystem()
 {
@@ -12,11 +12,14 @@ ReviveSystem::ReviveSystem()
 
 void ReviveSystem::Update(
     Player& player,
-    DummyPlayer& target
+    Player& target
 )
 {
-    // Player ไม่อยู่ในระยะ
-    if (!target.CanRevive(player.GetPosition()))
+    // =========================
+    // Check Revive Item
+    // =========================
+
+    if (!player.HasReviveItem())
     {
         reviveProgress = 0.0f;
         isReviving = false;
@@ -24,7 +27,41 @@ void ReviveSystem::Update(
         return;
     }
 
-    // อยู่ในระยะ แต่ไม่ได้กด E
+    // =========================
+    // Check Target State
+    // =========================
+
+    if (target.GetState() != PlayerState::Downed)
+    {
+        reviveProgress = 0.0f;
+        isReviving = false;
+
+        return;
+    }
+
+    // =========================
+    // Check Distance
+    // =========================
+
+    float distance = Vector2Distance(
+        player.GetPosition(),
+        target.GetPosition()
+    );
+
+    const float reviveRange = 80.0f;
+
+    if (distance > reviveRange)
+    {
+        reviveProgress = 0.0f;
+        isReviving = false;
+
+        return;
+    }
+
+    // =========================
+    // Check Hold E
+    // =========================
+
     if (!IsKeyDown(KEY_E))
     {
         reviveProgress = 0.0f;
@@ -33,17 +70,25 @@ void ReviveSystem::Update(
         return;
     }
 
-    // เริ่ม Revive
+    // =========================
+    // Reviving
+    // =========================
+
     isReviving = true;
 
-    float deltaTime = GetFrameTime();
+    reviveProgress += GetFrameTime();
 
-    reviveProgress += deltaTime;
+    // =========================
+    // Complete
+    // =========================
 
-    // ป้องกันค่าเกิน 3 วินาที
-    if (reviveProgress > reviveDuration)
+    if (reviveProgress >= reviveDuration)
     {
         reviveProgress = reviveDuration;
+        isReviving = false;
+
+        target.Revive();
+        player.UseReviveItem();
     }
 }
 

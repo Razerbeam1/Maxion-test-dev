@@ -3,7 +3,6 @@
 #include "raylib.h"
 
 class Player;
-class DummyPlayer;
 
 class ReviveSystem
 {
@@ -18,7 +17,7 @@ public:
 
     void Update(
         Player& player,
-        DummyPlayer& target
+        Player& target
     );
 
     void Draw(

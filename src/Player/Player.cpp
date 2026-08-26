@@ -100,3 +100,12 @@ PlayerState Player::GetState() const
 {
     return state;
 }
+void Player::Revive()
+{
+    if (state != PlayerState::Downed)
+    {
+        return;
+    }
+
+    state = PlayerState::Alive;
+}
