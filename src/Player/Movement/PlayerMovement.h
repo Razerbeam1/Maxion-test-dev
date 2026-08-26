@@ -1,6 +1,6 @@
 #pragma once
 
-#include "raylib.h"
+#include "../../Core/Vector2D.h"
 
 class PlayerMovement
 {
@@ -10,9 +10,6 @@ private:
 public:
     PlayerMovement(float speed = 250.0f);
 
-    void Update(
-        Vector2& position,
-        int screenWidth,
-        int screenHeight
-    );
+    void Move(Vector2D& position, float inputX, float inputY, float deltaTime,
+              float arenaWidth, float arenaHeight, float playerSize) const;
 };

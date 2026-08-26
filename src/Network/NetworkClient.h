@@ -1,8 +1,4 @@
-
 #pragma once
-
-// ENet ต้องถูก include ก่อน Windows/raylib
-// เพื่อป้องกันชื่อ API ของ Windows ชนกับ raylib
 #define Rectangle Win32Rectangle
 #define CloseWindow Win32CloseWindow
 #define ShowCursor Win32ShowCursor
@@ -10,9 +6,7 @@
 #define DrawText Win32DrawText
 #define DrawTextEx Win32DrawTextEx
 #define PlaySound Win32PlaySound
-
 #include <enet/enet.h>
-
 #undef Rectangle
 #undef CloseWindow
 #undef ShowCursor
@@ -20,29 +14,5 @@
 #undef DrawText
 #undef DrawTextEx
 #undef PlaySound
-
-class NetworkClient
-{
-private:
-    ENetHost* client;
-    ENetPeer* server;
-
-    bool connected;
-
-public:
-    NetworkClient();
-
-    bool Start();
-
-    bool Connect(
-        const char* host,
-        unsigned short port
-    );
-
-    void Update();
-
-    void Stop();
-
-    bool IsConnected() const;
-};
-
+#include "NetworkPacket.h"
+class NetworkClient { public: bool Start();bool Connect(const char* host,unsigned short port);void Update();void Stop();bool IsConnected()const;void SendInput(float x,float y,bool collect,bool revive,bool attack,int attackTargetId);int GetPlayerId()const;bool HasSnapshot()const;const NetworkMatchSnapshot& GetSnapshot()const;private: ENetHost* client=nullptr;ENetPeer* server=nullptr;int playerId=-1;unsigned int sequence=0;bool hasSnapshot=false;NetworkMatchSnapshot snapshot{};};

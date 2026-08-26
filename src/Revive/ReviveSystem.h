@@ -2,27 +2,16 @@
 
 #include "raylib.h"
 
-class Player;
-
+// แสดงความคืบหน้าการชุบจากข้อมูลที่เซิร์ฟเวอร์ยืนยันแล้ว
 class ReviveSystem
 {
-private:
-    float reviveDuration;
-    float reviveProgress;
-
-    bool isReviving;
-
 public:
-    ReviveSystem();
-
-    void Update(
-        Player& player,
-        Player& target
-    );
-
-    void Draw(
-        Vector2 position
-    );
-
+    void SetProgress(bool active, float seconds);
+    void Draw(Vector2 position) const;
     bool IsReviving() const;
+
+private:
+    bool isReviving = false;
+    float reviveProgress = 0.0f;
+    static constexpr float ReviveDuration = 2.0f;
 };

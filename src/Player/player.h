@@ -1,13 +1,12 @@
 #pragma once
 
-#include "raylib.h"
-
 #include "Data/PlayerData.h"
 #include "Movement/PlayerMovement.h"
 #include "Health/PlayerHealth.h"
 #include "Inventory/PlayerInventory.h"
 #include "State/PlayerState.h"
 
+// ข้อมูลและกฎของผู้เล่น ไม่มีโค้ดวาดภาพหรือคีย์บอร์ด
 class Player
 {
 private:
@@ -17,20 +16,17 @@ private:
     PlayerHealth health;
     PlayerInventory inventory;
 
-    PlayerState state;
+    PlayerLifeState state;
 
 public:
-    Player(float x, float y);
+    Player(float x = 0.0f, float y = 0.0f);
 
-    void Update(
-        int screenWidth,
-        int screenHeight
-    );
-
-    void Draw();
+    void Move(float inputX, float inputY, float deltaTime,
+              float arenaWidth, float arenaHeight, float playerSize);
 
     // Position
-    Vector2 GetPosition() const;
+    Vector2D GetPosition() const;
+    void SetPosition(Vector2D position);
 
     // Health
     float GetHealth() const;
@@ -43,9 +39,10 @@ public:
     bool HasReviveItem() const;
 
     void AddReviveItem();
-    void UseReviveItem();
+    bool UseReviveItem();
 
     // State
-    PlayerState GetState() const;
-    void Revive();
+    PlayerLifeState GetLifeState() const;
+    void Revive(float healthAmount);
+    void SetDead();
 };
