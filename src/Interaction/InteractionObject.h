@@ -17,9 +17,13 @@ public:
         float interactionRange
     );
 
-    virtual bool CanInteract(Vector2 playerPosition) = 0;
+    virtual bool CanInteract(
+        Vector2 playerPosition
+    ) = 0;
 
-    virtual void Interact(Player& player) = 0;
+    virtual void Interact(
+        Player& player
+    ) = 0;
 
     virtual void Draw() = 0;
 

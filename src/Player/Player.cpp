@@ -2,98 +2,101 @@
 
 Player::Player(float x, float y)
 {
-    position = {x, y};
-    speed = 250.0f;
+    data.position = {x, y};
 
-    // Health
-    maxHealth = 100.0f;
-    health = maxHealth;
-
-    // Inventory
-    hasHealItem = false;
+    state = PlayerState::Alive;
 }
 
-void Player::Update(int screenWidth, int screenHeight)
+void Player::Update(
+    int screenWidth,
+    int screenHeight
+)
 {
-    float deltaTime = GetFrameTime();
-
-    if (IsKeyDown(KEY_W))
+    if (state != PlayerState::Alive)
     {
-        position.y -= speed * deltaTime;
+        return;
     }
 
-    if (IsKeyDown(KEY_S))
-    {
-        position.y += speed * deltaTime;
-    }
-
-    if (IsKeyDown(KEY_A))
-    {
-        position.x -= speed * deltaTime;
-    }
-
-    if (IsKeyDown(KEY_D))
-    {
-        position.x += speed * deltaTime;
-    }
-
-    // Player size
-    const float playerSize = 40.0f;
-
-    // Boundary X
-    if (position.x < 0.0f)
-    {
-        position.x = 0.0f;
-    }
-
-    if (position.x > screenWidth - playerSize)
-    {
-        position.x = screenWidth - playerSize;
-    }
-
-    // Boundary Y
-    if (position.y < 0.0f)
-    {
-        position.y = 0.0f;
-    }
-
-    if (position.y > screenHeight - playerSize)
-    {
-        position.y = screenHeight - playerSize;
-    }
+    movement.Update(
+        data.position,
+        screenWidth,
+        screenHeight
+    );
 }
 
 void Player::Draw()
 {
     DrawRectangle(
-        (int)position.x,
-        (int)position.y,
+        (int)data.position.x,
+        (int)data.position.y,
         40,
         40,
         BLUE
     );
 }
 
+// =========================
+// POSITION
+// =========================
+
 Vector2 Player::GetPosition() const
 {
-    return position;
+    return data.position;
 }
+
+// =========================
+// HEALTH
+// =========================
 
 float Player::GetHealth() const
 {
-    return health;
+    return health.GetHealth();
 }
 
 float Player::GetMaxHealth() const
 {
-    return maxHealth;
+    return health.GetMaxHealth();
 }
+
+void Player::TakeDamage(float damage)
+{
+    health.TakeDamage(damage);
+
+    if (health.IsEmpty())
+    {
+        state = PlayerState::Downed;
+    }
+}
+
+void Player::Heal(float amount)
+{
+    health.Heal(amount);
+}
+
+// =========================
+// INVENTORY
+// =========================
 
 bool Player::HasHealItem() const
 {
-    return hasHealItem;
+    return inventory.HasHealItem();
 }
+
 void Player::AddHealItem()
 {
-    hasHealItem = true;
+    inventory.AddHealItem();
+}
+
+void Player::UseHealItem()
+{
+    inventory.RemoveHealItem();
+}
+
+// =========================
+// STATE
+// =========================
+
+PlayerState Player::GetState() const
+{
+    return state;
 }
