@@ -1,20 +1,21 @@
 #pragma once
 
-#include "../InteractionObject.h"
+#include "Item.h"
 
 class Player;
 
-class HealItem : public InteractionObject
+class HealItem : public Item
 {
-private:
-    bool collected;
-
 public:
     HealItem(float x, float y);
 
-    bool CanInteract(Vector2 playerPosition) override;
+    bool CanInteract(
+        Vector2 playerPosition
+    ) override;
 
-    void Interact(Player& player) override;
+    void Interact(
+        Player& player
+    ) override;
 
     void Draw() override;
 };

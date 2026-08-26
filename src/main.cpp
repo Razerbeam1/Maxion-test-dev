@@ -1,4 +1,5 @@
 #include "raylib.h"
+
 #include "Player/Player.h"
 #include "Interaction/Item/HealItem.h"
 #include "UI/HUD.h"
@@ -15,55 +16,75 @@ int main()
     );
 
     SetTargetFPS(60);
-    
-    // Random seed
-    SetRandomSeed((unsigned int)GetTime());
 
-    // Random Player position
-    float playerX = (float)GetRandomValue(0, screenWidth - 40);
-    float playerY = (float)GetRandomValue(0, screenHeight - 40);
+    SetRandomSeed(
+        (unsigned int)GetTime()
+    );
 
-    Player player(playerX, playerY);
+    float playerX =
+        (float)GetRandomValue(
+            0,
+            screenWidth - 40
+        );
 
-    // Random Heal Item position
-    float itemX = (float)GetRandomValue(15, screenWidth - 15);
-    float itemY = (float)GetRandomValue(15, screenHeight - 15);
+    float playerY =
+        (float)GetRandomValue(
+            0,
+            screenHeight - 40
+        );
 
-    HealItem healItem(itemX, itemY);
+    Player player(
+        playerX,
+        playerY
+    );
+
+    float itemX =
+        (float)GetRandomValue(
+            15,
+            screenWidth - 15
+        );
+
+    float itemY =
+        (float)GetRandomValue(
+            15,
+            screenHeight - 15
+        );
+
+    HealItem healItem(
+        itemX,
+        itemY
+    );
 
     HUD hud;
 
     while (!WindowShouldClose())
     {
-        // =========================
         // UPDATE
-        // =========================
 
-        player.Update(screenWidth, screenHeight);
+        player.Update(
+            screenWidth,
+            screenHeight
+        );
 
-        if (healItem.CanInteract(player.GetPosition()))
+        if (
+            healItem.CanInteract(
+                player.GetPosition()
+            )
+        )
         {
             if (IsKeyPressed(KEY_E))
             {
-                healItem.Interact(player);
+                healItem.Interact(
+                    player
+                );
             }
         }
 
-        // =========================
         // DRAW
-        // =========================
 
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
-        DrawText(
-        "WASD - Move",
-            1000,
-            20,
-            20,
-            BLACK
-        );
-        
 
         DrawRectangleLines(
             0,
@@ -75,10 +96,13 @@ int main()
 
         healItem.Draw();
 
-                player.Draw();
+        player.Draw();
 
-        // Interaction UI
-        if (healItem.CanInteract(player.GetPosition()))
+        if (
+            healItem.CanInteract(
+                player.GetPosition()
+            )
+        )
         {
             DrawText(
                 "[E] Collect",
@@ -89,7 +113,6 @@ int main()
             );
         }
 
-        // HUD
         hud.DrawHealth(
             player.GetHealth(),
             player.GetMaxHealth()
