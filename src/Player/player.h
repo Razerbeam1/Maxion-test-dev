@@ -40,10 +40,10 @@ public:
     void Heal(float amount);
 
     // Inventory
-    bool HasHealItem() const;
+    bool HasReviveItem() const;
 
-    void AddHealItem();
-    void UseHealItem();
+    void AddReviveItem();
+    void UseReviveItem();
 
     // State
     PlayerState GetState() const;

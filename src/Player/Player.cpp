@@ -77,19 +77,19 @@ void Player::Heal(float amount)
 // INVENTORY
 // =========================
 
-bool Player::HasHealItem() const
+bool Player::HasReviveItem() const
 {
-    return inventory.HasHealItem();
+    return inventory.HasReviveItem();
 }
 
-void Player::AddHealItem()
+void Player::AddReviveItem()
 {
-    inventory.AddHealItem();
+    inventory.AddReviveItem();
 }
 
-void Player::UseHealItem()
+void Player::UseReviveItem()
 {
-    inventory.RemoveHealItem();
+    inventory.RemoveReviveItem();
 }
 
 // =========================

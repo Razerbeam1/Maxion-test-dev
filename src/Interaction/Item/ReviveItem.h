@@ -4,10 +4,10 @@
 
 class Player;
 
-class HealItem : public Item
+class ReviveItem : public Item
 {
 public:
-    HealItem(float x, float y);
+    ReviveItem(float x, float y);
 
     bool CanInteract(
         Vector2 playerPosition

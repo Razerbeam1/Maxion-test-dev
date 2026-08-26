@@ -1,7 +1,7 @@
 #include "raylib.h"
 
 #include "Player/Player.h"
-#include "Interaction/Item/HealItem.h"
+#include "Interaction/Item/ReviveItem.h"
 #include "UI/HUD.h"
 
 int main()
@@ -50,10 +50,7 @@ int main()
             screenHeight - 15
         );
 
-    HealItem healItem(
-        itemX,
-        itemY
-    );
+    ReviveItem reviveItem(itemX, itemY);
 
     HUD hud;
 
@@ -67,14 +64,14 @@ int main()
         );
 
         if (
-            healItem.CanInteract(
+            reviveItem.CanInteract(
                 player.GetPosition()
             )
         )
         {
             if (IsKeyPressed(KEY_E))
             {
-                healItem.Interact(
+                reviveItem.Interact(
                     player
                 );
             }
@@ -94,12 +91,12 @@ int main()
             BLACK
         );
 
-        healItem.Draw();
+        reviveItem.Draw();
 
         player.Draw();
 
         if (
-            healItem.CanInteract(
+            reviveItem.CanInteract(
                 player.GetPosition()
             )
         )
@@ -119,7 +116,7 @@ int main()
         );
 
         hud.DrawInventory(
-            player.HasHealItem()
+            player.HasReviveItem()
         );
 
         EndDrawing();

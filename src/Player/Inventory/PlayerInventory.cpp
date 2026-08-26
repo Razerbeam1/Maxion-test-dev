@@ -2,20 +2,20 @@
 
 PlayerInventory::PlayerInventory()
 {
-    hasHealItem = false;
+    hasReviveItem = false;
 }
 
-bool PlayerInventory::HasHealItem() const
+bool PlayerInventory::HasReviveItem() const
 {
-    return hasHealItem;
+    return hasReviveItem;
 }
 
-void PlayerInventory::AddHealItem()
+void PlayerInventory::AddReviveItem()
 {
-    hasHealItem = true;
+    hasReviveItem = true;
 }
 
-void PlayerInventory::RemoveHealItem()
+void PlayerInventory::RemoveReviveItem()
 {
-    hasHealItem = false;
+    hasReviveItem = false;
 }
