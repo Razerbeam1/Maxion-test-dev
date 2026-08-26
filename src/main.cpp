@@ -1,146 +1,38 @@
-#include "raylib.h"
+#include <iostream>
 
-#include "Player/Player.h"
-#include "Interaction/Item/ReviveItem.h"
-#include "UI/HUD.h"
+#include "Game/Game.h"
 
 int main()
 {
-    const int screenWidth = 1280;
-    const int screenHeight = 720;
+    std::cout << "=========================\n";
+    std::cout << "       TEST-DEV\n";
+    std::cout << "=========================\n";
+    std::cout << "1. Host\n";
+    std::cout << "2. Client\n";
+    std::cout << "Select: ";
 
-    InitWindow(
-        screenWidth,
-        screenHeight,
-        "Test-dev"
-    );
+    int choice;
+    std::cin >> choice;
 
-    SetTargetFPS(60);
+    Game game;
 
-    // Random seed
-    SetRandomSeed(
-        (unsigned int)GetTime()
-    );
-
-    // Random Player position
-    float playerX =
-        (float)GetRandomValue(
-            0,
-            screenWidth - 40
-        );
-
-    float playerY =
-        (float)GetRandomValue(
-            0,
-            screenHeight - 40
-        );
-
-    Player player(
-        playerX,
-        playerY
-    );
-    
-
-    
-
-    // Random Revive Item position
-    float itemX =
-        (float)GetRandomValue(
-            15,
-            screenWidth - 15
-        );
-
-    float itemY =
-        (float)GetRandomValue(
-            15,
-            screenHeight - 15
-        );
-
-    ReviveItem reviveItem(
-        itemX,
-        itemY
-    );
-
-    HUD hud;
-
-    while (!WindowShouldClose())
+    if (choice == 1)
     {
-        // =========================
-        // UPDATE
-        // =========================
-
-        player.Update(
-            screenWidth,
-            screenHeight
+        game.StartHost();
+    }
+    else if (choice == 2)
+    {
+        game.StartClient(
+            "127.0.0.1"
         );
-
-        // Collect Revive Item
-        if (
-            reviveItem.CanInteract(
-                player.GetPosition()
-            )
-        )
-        {
-            if (IsKeyPressed(KEY_E))
-            {
-                reviveItem.Interact(
-                    player
-                );
-            }
-        }
-
-        // =========================
-        // DRAW
-        // =========================
-
-        BeginDrawing();
-
-        ClearBackground(RAYWHITE);
-
-        DrawRectangleLines(
-            0,
-            0,
-            screenWidth,
-            screenHeight,
-            BLACK
-        );
-
-        reviveItem.Draw();
-
-        player.Draw();
-
-
-        // Interaction UI
-        if (
-            reviveItem.CanInteract(
-                player.GetPosition()
-            )
-        )
-        {
-            DrawText(
-                "[E] Collect Revive Item",
-                (int)itemX - 90,
-                (int)itemY - 40,
-                20,
-                BLACK
-            );
-        }
-
-        // HUD
-        hud.DrawHealth(
-            player.GetHealth(),
-            player.GetMaxHealth()
-        );
-
-        hud.DrawInventory(
-            player.HasReviveItem()
-        );
-
-        EndDrawing();
+    }
+    else
+    {
+        std::cout << "Invalid choice.\n";
+        return 1;
     }
 
-    CloseWindow();
+    game.Run();
 
     return 0;
-    
 }

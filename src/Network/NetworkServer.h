@@ -1,8 +1,7 @@
-
 #pragma once
 
-// ENet ต้องถูก include ก่อน Windows/raylib
-// เพื่อป้องกันชื่อ API ของ Windows ชนกับ raylib
+// ENet บน Windows ดึง Windows API เข้ามา
+// ซึ่งมีชื่อชนกับ Raylib เช่น Rectangle, DrawText, CloseWindow
 #define Rectangle Win32Rectangle
 #define CloseWindow Win32CloseWindow
 #define ShowCursor Win32ShowCursor
@@ -13,6 +12,7 @@
 
 #include <enet/enet.h>
 
+// คืนชื่อเดิมหลังจาก include ENet
 #undef Rectangle
 #undef CloseWindow
 #undef ShowCursor
@@ -21,28 +21,20 @@
 #undef DrawTextEx
 #undef PlaySound
 
-class NetworkClient
+
+class NetworkServer
 {
 private:
-    ENetHost* client;
-    ENetPeer* server;
-
-    bool connected;
+    ENetHost* server;
 
 public:
-    NetworkClient();
+    NetworkServer();
 
-    bool Start();
-
-    bool Connect(
-        const char* host,
-        unsigned short port
-    );
+    bool Start(unsigned short port);
 
     void Update();
 
     void Stop();
 
-    bool IsConnected() const;
+    bool IsRunning() const;
 };
-
