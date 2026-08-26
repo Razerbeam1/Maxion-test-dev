@@ -1,34 +1,48 @@
 #pragma once
 
-#include "raylib.h"
+#include "Data/PlayerData.h"
+#include "Movement/PlayerMovement.h"
+#include "Health/PlayerHealth.h"
+#include "Inventory/PlayerInventory.h"
+#include "State/PlayerState.h"
 
+// ข้อมูลและกฎของผู้เล่น ไม่มีโค้ดวาดภาพหรือคีย์บอร์ด
 class Player
 {
 private:
-    Vector2 position;
-    float speed;
+    PlayerData data;
 
-    // Health
-    float health;
-    float maxHealth;
+    PlayerMovement movement;
+    PlayerHealth health;
+    PlayerInventory inventory;
 
-    // Inventory
-    bool hasHealItem;
+    PlayerLifeState state;
 
 public:
-    Player(float x, float y);
+    Player(float x = 0.0f, float y = 0.0f);
 
-    void Update(int screenWidth, int screenHeight);
-    void Draw();
+    void Move(float inputX, float inputY, float deltaTime,
+              float arenaWidth, float arenaHeight, float playerSize);
 
-    Vector2 GetPosition() const;
+    // Position
+    Vector2D GetPosition() const;
+    void SetPosition(Vector2D position);
 
     // Health
     float GetHealth() const;
     float GetMaxHealth() const;
 
-    // Inventory
-    bool HasHealItem() const;
+    void TakeDamage(float damage);
+    void Heal(float amount);
 
-    void AddHealItem();
+    // Inventory
+    bool HasReviveItem() const;
+
+    void AddReviveItem();
+    bool UseReviveItem();
+
+    // State
+    PlayerLifeState GetLifeState() const;
+    void Revive(float healthAmount);
+    void SetDead();
 };

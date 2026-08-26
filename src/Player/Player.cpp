@@ -1,99 +1,19 @@
-#include "Player.h"
+#include "player.h"
 
-Player::Player(float x, float y)
+Player::Player(float x, float y) { data.position = {x, y}; state = PlayerLifeState::Alive; }
+void Player::Move(float inputX, float inputY, float deltaTime, float arenaWidth, float arenaHeight, float playerSize)
 {
-    position = {x, y};
-    speed = 250.0f;
-
-    // Health
-    maxHealth = 100.0f;
-    health = maxHealth;
-
-    // Inventory
-    hasHealItem = false;
+    if (state == PlayerLifeState::Alive) movement.Move(data.position, inputX, inputY, deltaTime, arenaWidth, arenaHeight, playerSize);
 }
-
-void Player::Update(int screenWidth, int screenHeight)
-{
-    float deltaTime = GetFrameTime();
-
-    if (IsKeyDown(KEY_W))
-    {
-        position.y -= speed * deltaTime;
-    }
-
-    if (IsKeyDown(KEY_S))
-    {
-        position.y += speed * deltaTime;
-    }
-
-    if (IsKeyDown(KEY_A))
-    {
-        position.x -= speed * deltaTime;
-    }
-
-    if (IsKeyDown(KEY_D))
-    {
-        position.x += speed * deltaTime;
-    }
-
-    // Player size
-    const float playerSize = 40.0f;
-
-    // Boundary X
-    if (position.x < 0.0f)
-    {
-        position.x = 0.0f;
-    }
-
-    if (position.x > screenWidth - playerSize)
-    {
-        position.x = screenWidth - playerSize;
-    }
-
-    // Boundary Y
-    if (position.y < 0.0f)
-    {
-        position.y = 0.0f;
-    }
-
-    if (position.y > screenHeight - playerSize)
-    {
-        position.y = screenHeight - playerSize;
-    }
-}
-
-void Player::Draw()
-{
-    DrawRectangle(
-        (int)position.x,
-        (int)position.y,
-        40,
-        40,
-        BLUE
-    );
-}
-
-Vector2 Player::GetPosition() const
-{
-    return position;
-}
-
-float Player::GetHealth() const
-{
-    return health;
-}
-
-float Player::GetMaxHealth() const
-{
-    return maxHealth;
-}
-
-bool Player::HasHealItem() const
-{
-    return hasHealItem;
-}
-void Player::AddHealItem()
-{
-    hasHealItem = true;
-}
+Vector2D Player::GetPosition() const { return data.position; }
+void Player::SetPosition(Vector2D position) { data.position = position; }
+float Player::GetHealth() const { return health.GetHealth(); }
+float Player::GetMaxHealth() const { return health.GetMaxHealth(); }
+void Player::TakeDamage(float damage) { if (state == PlayerLifeState::Dead) return; health.TakeDamage(damage); if (health.IsEmpty()) state = PlayerLifeState::Downed; }
+void Player::Heal(float amount) { if (state == PlayerLifeState::Alive) health.Heal(amount); }
+bool Player::HasReviveItem() const { return inventory.HasReviveItem(); }
+void Player::AddReviveItem() { inventory.AddReviveItem(); }
+bool Player::UseReviveItem() { if (state != PlayerLifeState::Alive || !inventory.HasReviveItem()) return false; inventory.RemoveReviveItem(); return true; }
+PlayerLifeState Player::GetLifeState() const { return state; }
+void Player::Revive(float healthAmount) { if (state != PlayerLifeState::Downed) return; health.Heal(healthAmount); state = PlayerLifeState::Alive; }
+void Player::SetDead() { state = PlayerLifeState::Dead; }

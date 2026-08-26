@@ -5,6 +5,12 @@
 class HUD
 {
 public:
-    void DrawHealth(float health, float maxHealth);
-    void DrawInventory(bool hasHealItem);
+    void DrawHealth(
+        float health,
+        float maxHealth
+    );
+
+    void DrawInventory(
+        bool hasReviveItem
+    );
 };
