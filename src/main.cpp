@@ -17,10 +17,12 @@ int main()
 
     SetTargetFPS(60);
 
+    // Random seed
     SetRandomSeed(
         (unsigned int)GetTime()
     );
 
+    // Random Player position
     float playerX =
         (float)GetRandomValue(
             0,
@@ -38,6 +40,7 @@ int main()
         playerY
     );
 
+    // Random Revive Item position
     float itemX =
         (float)GetRandomValue(
             15,
@@ -50,19 +53,25 @@ int main()
             screenHeight - 15
         );
 
-    ReviveItem reviveItem(itemX, itemY);
+    ReviveItem reviveItem(
+        itemX,
+        itemY
+    );
 
     HUD hud;
 
     while (!WindowShouldClose())
     {
+        // =========================
         // UPDATE
+        // =========================
 
         player.Update(
             screenWidth,
             screenHeight
         );
 
+        // Collect Revive Item
         if (
             reviveItem.CanInteract(
                 player.GetPosition()
@@ -77,7 +86,9 @@ int main()
             }
         }
 
+        // =========================
         // DRAW
+        // =========================
 
         BeginDrawing();
 
@@ -95,6 +106,7 @@ int main()
 
         player.Draw();
 
+        // Interaction UI
         if (
             reviveItem.CanInteract(
                 player.GetPosition()
@@ -102,14 +114,15 @@ int main()
         )
         {
             DrawText(
-                "[E] Collect",
-                (int)itemX - 45,
+                "[E] Collect Revive Item",
+                (int)itemX - 90,
                 (int)itemY - 40,
                 20,
                 BLACK
             );
         }
 
+        // HUD
         hud.DrawHealth(
             player.GetHealth(),
             player.GetMaxHealth()
