@@ -12,7 +12,7 @@ bool NetworkServer::Start(unsigned short port)
     address.port = port;
     server = enet_host_create(&address, GameWorld::PlayerCount, 1, 0, 0);
     if (!server) return false;
-    std::cout << "Dedicated server listening on " << port << " (max 4 players)\n";
+    std::cout << "Dedicated server listening on " << port << " (max " << GameWorld::PlayerCount << " players)\n";
     return true;
 }
 

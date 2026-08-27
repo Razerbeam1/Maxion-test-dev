@@ -1,0 +1,207 @@
+CO-OP ARENA — คู่มือการทำงานของโค้ด
+=======================================
+
+ภาพรวม
+-------
+เกมใช้รูปแบบ Authoritative Server: server เป็นผู้ตัดสินผลจริง ส่วน client
+เป็นหน้าต่างที่รับปุ่มและแสดงผลเท่านั้น Client จึงไม่ส่งตำแหน่งหรือ HP ไปบอก
+server โดยตรง แต่ส่งว่า "กดเดินทางไหน", "กดเก็บของ", "กำลังกดชุบ" หรือ
+"คลิกโจมตีใคร" ให้ server ตรวจตามกติกาก่อนเสมอ
+
+เส้นทางข้อมูล
+--------------
+
+  WASD / E / Mouse
+          |
+          v
+  ClientInput (แปลงปุ่มเป็นคำสั่ง)
+          |
+          v
+  NetworkClient -- ENet ผ่าน UDP --> NetworkServer
+                                        |
+                                        v
+                             GameWorld (กติกากลาง)
+                                        |
+                                        v
+                         Player / Health / Movement / Inventory
+                                        |
+                                        v
+  GameRenderer <-- NetworkClient <-- MatchSnapshot <-- NetworkServer
+
+ผลคือทุก client วาดจาก MatchSnapshot ชุดเดียวกัน จึงเห็นสถานะเดียวกัน
+
+1. จุดเริ่มต้นของโปรแกรม
+--------------------------
+
+src/server_main.cpp
+  จุดเริ่ม GameServer.exe เริ่ม ENet, สร้าง NetworkServer ที่ port 27015
+  และวนเรียก server.Update ทุกประมาณ 16 ms หน้าต่าง Terminal ที่เปิดพร้อม
+  GameServer.exe คือ log ของโปรแกรมนี้
+
+src/main.cpp
+  จุดเริ่ม GameClient.exe ถ้ามี argument ตัวแรกจะใช้เป็น IP ของ server;
+  หากไม่มีจะใช้ 127.0.0.1 (server ในเครื่องเดียวกัน) จากนั้นสร้าง Game,
+  เชื่อม server และเปิดหน้าต่างเกม
+
+2. NetworkServer: รับคำสั่งและส่งสถานะจริง
+--------------------------------------------
+
+src/Network/NetworkServer.h และ .cpp
+  NetworkServer เป็นเจ้าของ GameWorld และ ENet host
+
+  Start(port)
+    เปิด ENet server ที่ port 27015 โดยมีจำนวนช่องผู้เล่นเท่ากับ
+    GameWorld::PlayerCount (ปัจจุบัน 16)
+
+  เมื่อมี client เชื่อมต่อ
+    หา player id ที่ว่างใน peers[], บันทึก ENet peer, เรียก
+    world.SetPlayerConnected(id, true) และส่ง PlayerAssignmentPacket กลับไป
+    เพื่อแจ้ง id ให้ client รู้
+
+  เมื่อได้รับ PlayerInputCommand
+    หา id จาก ENet peer ที่เชื่อมอยู่ ไม่เชื่อ id ที่ client อาจส่งมาเอง
+    แล้วเรียก world.ApplyInput ถ้าคำสั่งผ่านและเป็นการโจมตี จึงเรียก
+    world.DamagePlayer เพื่อหัก HP เป้าหมาย 20
+
+  เมื่อ client หลุด
+    ล้าง peer และบอก GameWorld ว่าผู้เล่นช่องนั้นไม่เชื่อมต่อแล้ว
+
+  หลังประมวลผล event ในทุก tick
+    เรียก world.Update(deltaTime) แล้วสร้าง NetworkMatchSnapshot จาก
+    GameWorld เพื่อส่งให้ client ทุกคน
+
+3. GameWorld: กติกาจริงของแมตช์
+--------------------------------
+
+src/Game/GameWorld.h และ .cpp
+  เป็นศูนย์กลางกติกา ไม่มี Raylib ไม่มีคีย์บอร์ด และไม่มีโค้ดหน้าต่าง
+  จึงใช้ได้ใน dedicated server และใน test
+
+  ข้อมูลที่เก็บ
+    - Player 16 ช่อง และสถานะ connected ของแต่ละช่อง
+    - ตำแหน่ง/สถานะของ Revive Kit
+    - ความคืบหน้าการชุบ (คนชุบ, เป้าหมาย, เวลา)
+    - sequence ล่าสุดของคำสั่งแต่ละ player
+    - แกนเดินและสถานะกดชุบล่าสุด
+    - event ล่าสุด เช่น join, attack, collect, revive
+
+  ApplyInput(...)
+    ปฏิเสธคำสั่งที่ player id ไม่ถูกต้อง, ยังไม่เชื่อมต่อ, sequence ซ้ำ/เก่า
+    หรือผู้เล่นไม่ใช่ Alive หากเป็นการเก็บของ จะตรวจระยะก่อน ถ้าเป็นการ
+    โจมตีจะตรวจว่าเป้าหมายมีอยู่ ไม่ใช่ตัวเอง และกำลังเชื่อมต่ออยู่
+    จากนั้น normalize แกนเดินเพื่อไม่ให้เดินทแยงเร็วกว่า และบันทึกปุ่มชุบ
+
+  Update(deltaTime)
+    จำกัด delta time สูงสุด 0.1 วินาทีเพื่อกันการกระโดดไกลเมื่อเครื่องสะดุด
+    ขยับเฉพาะคนที่ connected และ Alive, อัปเดตการชุบ และนับเวลาสร้าง item ใหม่
+
+  TryCollectItem
+    ผู้เล่นต้องอยู่ภายใน 80 หน่วยจากกล่อง จึงได้รับ Revive Kit กล่องจะหาย
+    และเริ่มเวลา respawn 5 วินาที
+
+  UpdateRevive
+    คนชุบต้อง Alive, ถือ Revive Kit และอยู่ในระยะ 90 หน่วยของคน Downed
+    ต้องกด E ค้าง 2 วินาทีต่อเนื่อง จึง revive เป้าหมายที่ 40 HP และใช้ Kit
+    หากปล่อยปุ่ม, เดินไกล, คนใดคนหนึ่งถูกโจมตี, หรือสถานะเปลี่ยน จะยกเลิก
+
+  DamagePlayer
+    ลด HP เป้าหมายได้เฉพาะเป้าหมายที่ Alive และเชื่อมอยู่ ถ้า HP เป็น 0
+    Player จะ Downed และ revive ที่กำลังเกี่ยวข้องจะถูกยกเลิก
+
+4. Player และระบบย่อย
+----------------------
+
+src/Player/player.h และ .cpp
+  Player รวม PlayerData, PlayerMovement, PlayerHealth, PlayerInventory และ
+  PlayerLifeState ไว้ด้วยกัน ไม่รู้เรื่อง network หรือการวาดภาพ
+  - Move ทำงานเฉพาะ Alive
+  - TakeDamage ลด HP; HP หมดเปลี่ยนเป็น Downed
+  - Revive ทำงานเฉพาะ Downed แล้วกลับเป็น Alive
+  - UseReviveItem ทำงานเฉพาะ Alive ที่ถือ item
+
+src/Player/Data/Playerdata.h
+  PlayerData เก็บตำแหน่ง Vector2D ของผู้เล่น
+
+src/Player/Movement/PlayerMovement.h และ .cpp
+  เคลื่อนที่ด้วยความเร็วเริ่มต้น 250 หน่วย/วินาที และบังคับตำแหน่งไม่ให้ออก
+  นอกสนาม
+
+src/Player/Health/PlayerHealth.h และ .cpp
+  เก็บ HP ปัจจุบัน/สูงสุด (เริ่ม 100) จำกัดค่าให้อยู่ในช่วง 0 ถึง maxHealth
+
+src/Player/Inventory/PlayerInventory.h และ .cpp
+  เก็บ boolean ว่าถือ Revive Kit หรือไม่ จึงถือได้เพียงหนึ่งชิ้น
+
+src/Player/State/PlayerState.h
+  ประกาศสถานะ Alive, Downed, Dead ปัจจุบัน HP หมดจะเป็น Downed; Dead เป็น
+  สถานะที่เตรียมไว้ให้กติกาในอนาคต
+
+src/Core/Vector2D.h
+  struct พิกัด x/y และ DistanceSquared สำหรับเปรียบเทียบระยะโดยไม่ต้องถอดราก
+
+5. แพ็กเก็ตที่ส่งผ่านเครือข่าย
+--------------------------------
+
+src/Network/NetworkPacket.h
+  กำหนด struct ร่วมของ client/server และใช้ #pragma pack เพื่อให้ layout
+  ไบนารีตรงกัน
+  - PlayerInputCommand: input ที่ client ส่ง (เดิน, collect, revive, attack,
+    เป้าหมาย และ sequence)
+  - PlayerAssignmentPacket: id ที่ server แจกเมื่อเชื่อมสำเร็จ
+  - NetworkMatchSnapshot: ผู้เล่นทุกช่อง, item, revive progress และ event ล่าสุด
+
+src/Network/NetworkClient.h และ .cpp
+  ดูแล ENet ฝั่ง client
+  - Start สร้าง ENet host
+  - Connect แปลงชื่อ/IP ของ server และรอเชื่อมต่อไม่เกิน 5 วินาที
+  - SendInput เพิ่ม sequence ทุกครั้งแล้วส่ง PlayerInputCommand
+  - Update รับ assignment เพื่อเก็บ playerId; รับ snapshot เพื่อแทนที่ข้อมูลล่าสุด
+  - Stop ตัดการเชื่อมต่อและคืนทรัพยากร
+
+6. Client: อ่านปุ่มและวาดหน้าจอ
+---------------------------------
+
+src/Game/Game.h และ .cpp
+  ประสาน NetworkClient, ClientInput และ GameRenderer Constructor/destructor
+  เริ่ม/ปิด ENet; Connect เชื่อม port 27015; Run สร้างหน้าต่าง 1280x720 แล้ววน
+  รับเครือข่าย -> อ่าน/ส่ง input -> วาด snapshot ล่าสุด
+
+src/Client/ClientInput.h และ .cpp
+  แปลง WASD เป็นแกนเดิน, E แบบกดครั้งเดียวเป็น collect, E แบบกดค้างเป็น revive
+  และคลิกซ้ายเป็น attack เมื่อเมาส์ทับตัวผู้เล่นอื่นใน snapshot
+
+src/Client/GameRenderer.h และ .cpp
+  ใช้ Raylib วาดทุกอย่างจาก snapshot เท่านั้น: สนาม, Revive Kit, ตัวผู้เล่น,
+  HP, panel ทีม, progress bar และ event ล่าสุด 3 รายการ ผู้เล่นในหน้าต่างนี้
+  เป็นสีฟ้า ผู้เล่นอื่นสีแดง
+
+7. ไฟล์เก่าหรือยังไม่ได้เชื่อมกับ flow หลัก
+---------------------------------------------
+
+src/UI/HUD.h และ .cpp
+  widget วาด HP/inventory แบบเก่า ปัจจุบัน GameRenderer วาด panel ของตนเอง
+  จึงยังไม่ได้ถูกเรียก
+
+src/Revive/ReviveSystem.h และ .cpp
+  widget วาดแถบชุบแบบเก่า โดยยึด progress ที่ server ยืนยัน ปัจจุบัน
+  GameRenderer วาดแถบชุบเอง จึงยังไม่ได้ถูกเรียก
+
+src/Interaction/InteractionObject.h/.cpp และ src/Interaction/Item/*
+  โครงสร้าง OOP เดิมของวัตถุโต้ตอบ/ไอเท็ม ตอนนี้กติกาเก็บและชุบอยู่ใน
+  GameWorld เพื่อให้ server เป็นผู้ตัดสิน ReviveItem.cpp ยังไม่มี implementation
+  และกลุ่มนี้ไม่อยู่ในคำสั่ง build หลัก
+
+8. การทดสอบ
+--------------
+
+src/Test/GameWorldTests.cpp
+  ทดสอบ GameWorld โดยตรง ไม่ต้องเปิด window หรือ server ตรวจการห้ามทำงานเมื่อ
+  Downed/Dead, ระยะเก็บของ, คำสั่งซ้ำ, การชุบไกลเกิน, การปล่อยปุ่มชุบ และการ
+  ถูกโจมตีระหว่างชุบ เมื่อผ่านจะแสดง "GameWorld rule tests passed"
+
+ข้อจำกัดปัจจุบัน
+-----------------
+- snapshot ส่งข้อมูลครบ 16 ช่องทุกครั้ง แม้ผู้เล่นจริงจะน้อยกว่า
+- client ยังไม่มี interpolation จึงอาจเห็นการขยับไม่ลื่นเมื่อเครือข่ายช้า
+- server ไม่บันทึกสถานะแมตช์; ปิด server แล้วเริ่มใหม่
+- ข้อความ console ของ server เขียน max 4 players แต่ค่าจริงในโค้ดคือ 16 คน
