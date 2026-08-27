@@ -1,60 +1,75 @@
-# Co-op Arena
+# Co-op Arena — สรุปโปรเจกต์แบบเข้าใจง่าย
 
-เกมต่อสู้ร่วมทีมมุมมองจากด้านบน โดย **เซิร์ฟเวอร์เป็นผู้ตัดสินผลจริง** ผู้เล่นส่งเพียงปุ่มที่กด ส่วนการเดิน HP การโจมตี การเก็บของ และการชุบชีวิต จะถูกตรวจและคำนวณที่เซิร์ฟเวอร์
+เกมต่อสู้แบบทีมมองจากด้านบน ผู้เล่นเดิน เก็บ `Revive Kit` โจมตี และชุบเพื่อนที่ล้มได้ Server เป็นคนคำนวณผลจริง ส่วนหน้าต่างของผู้เล่นรับปุ่มและแสดงผล
 
-## เปิดเล่นจากไฟล์ `.exe` (ไม่ต้องใช้ VS Code)
+## วิธีเปิดเล่น
 
-ต้องเก็บไฟล์ `.exe` ไว้ในโฟลเดอร์เดียวกัน แล้วเปิดตามลำดับนี้ผ่าน File Explorer
+เก็บไฟล์ `.exe` ไว้โฟลเดอร์เดียวกัน แล้วทำตามลำดับนี้
 
-1. ดับเบิลคลิก **`GameServer.exe`**
-   - จะเห็นหน้าต่าง Terminal เปิดค้างไว้
-   - รอข้อความ `Dedicated server listening on 27015`
-   - **อย่าปิดหน้าต่างนี้ระหว่างเล่น** เพราะเป็นเซิร์ฟเวอร์ของเกม
-2. ดับเบิลคลิก **`GameClient.exe`**
-   - หน้าต่างเกมจะเปิดขึ้นทันที เป็น Player 1
-3. หากต้องการเพิ่มผู้เล่นในเครื่องเดียวกัน ให้ดับเบิลคลิก `GameClient.exe` อีกครั้ง
-   - หน้าต่างใหม่จะเป็น Player 2 (และเปิดเพิ่มได้ตามจำนวนที่เซิร์ฟเวอร์รองรับ)
-4. เมื่อเล่นเสร็จ ให้ปิดหน้าต่างเกมทุกอัน แล้วปิด Terminal ของ `GameServer.exe`
+1. ดับเบิลคลิก `GameServer.exe` เปิดค้างไว้ จะเห็น `Dedicated server listening on 27015 (max 16 players)` ใน Terminal
+2. ดับเบิลคลิก `GameClient.exe` เพื่อเปิดหน้าต่างเกม (ผู้เล่นคนแรก)
+3. เปิด `GameClient.exe` ซ้ำเพื่อเพิ่มผู้เล่นในเครื่องเดียวกัน
+4. เลิกเล่นให้ปิดหน้าต่างเกมทั้งหมด แล้วจึงปิด Terminal ของ server
 
-`Game.exe` ไม่ใช่ไฟล์ที่ใช้เปิดเกมในเวอร์ชันนี้ ให้ใช้ `GameServer.exe` และ `GameClient.exe` ตามขั้นตอนข้างต้น
-
-## วิธีเล่น
+### ปุ่มเล่น
 
 | ปุ่ม | การทำงาน |
 | --- | --- |
-| WASD | เดิน |
-| E (กดครั้งเดียว) | เก็บกล่อง Revive Kit สีทองเมื่ออยู่ใกล้ |
-| E (กดค้าง) | ชุบเพื่อนที่ล้มเมื่ออยู่ใกล้และมี Revive Kit |
-| คลิกซ้ายที่ผู้เล่นอื่น | โจมตี ลด HP 20 หน่วย |
+| `W A S D` | เดิน |
+| กด `E` หนึ่งครั้ง | เก็บกล่อง Revive Kit เมื่ออยู่ใกล้ |
+| กด `E` ค้าง 2 วินาที | ชุบเพื่อนที่ล้ม เมื่ออยู่ใกล้และมี Kit |
+| คลิกซ้ายผู้เล่นอื่น | โจมตี ลด HP 20 |
 
-ผู้เล่นเริ่มด้วย 100 HP เมื่อ HP เหลือ 0 จะอยู่สถานะ **DOWNED** และเดิน/โจมตี/เก็บของ/ชุบไม่ได้ เพื่อนที่เป็น **ALIVE** และถือ Revive Kit ต้องยืนใกล้แล้วกด E ค้าง 2 วินาที จึงชุบกลับมาที่ 40 HP ได้
+ผู้เล่นเริ่ม 100 HP; HP หมดเป็น `DOWNED` จึงเดิน/โจมตี/เก็บของ/ชุบไม่ได้ การชุบสำเร็จทำให้กลับมา 40 HP และใช้ Kit หนึ่งชิ้น กล่องเกิดใหม่แบบสุ่มหลังถูกเก็บ 5 วินาที
 
-กล่อง Revive Kit จะสุ่มเกิดในสนาม เมื่อมีคนเก็บแล้วจะเกิดใหม่หลัง 5 วินาที
+## เล่นข้ามเครื่อง
 
-## เล่นข้ามเครื่องในเครือข่ายเดียวกัน
-
-เครื่องเจ้าบ้านเปิด `GameServer.exe` ก่อน เครื่องอื่นต้องเปิด Command Prompt หรือ PowerShell ในโฟลเดอร์นี้ แล้วระบุ IP ของเครื่องเจ้าบ้าน:
+เครื่องเจ้าบ้านเปิด `GameServer.exe` ก่อน เครื่องอื่นเปิด PowerShell ในโฟลเดอร์นี้แล้วใช้ IP ของเจ้าบ้าน:
 
 ```powershell
 .\GameClient.exe 192.168.1.10
 ```
 
-ใช้ UDP port `27015` ดังนั้นเครื่องเจ้าบ้านต้องอนุญาตพอร์ตนี้ผ่าน Windows Firewall หากเล่นเครื่องเดียวกัน ไม่ต้องระบุ IP และเปิด `GameClient.exe` ด้วยการดับเบิลคลิกได้เลย
+ต้องอนุญาต UDP port `27015` ใน Windows Firewall ของเจ้าบ้าน หากเล่นเครื่องเดียวกัน ไม่ต้องใส่ IP
 
-## ไฟล์ในโฟลเดอร์นี้
+## ไฟล์ `.exe` ใช้ทำอะไร
 
-| ไฟล์ | หน้าที่ |
-| --- | --- |
-| `GameServer.exe` | เปิดเซิร์ฟเวอร์ใน Terminal — เปิดก่อนเสมอ |
-| `GameClient.exe` | เปิดหน้าต่างเกมของผู้เล่น |
-| `GameWorldTests.exe` | ทดสอบกติกาเกมสำหรับผู้พัฒนา |
-| `CODE_OVERVIEW.txt` | เอกสารสรุปการทำงานและความเชื่อมโยงของโค้ดทุกส่วน |
+| ไฟล์ | หน้าที่ | การใช้งาน |
+| --- | --- | --- |
+| `GameServer.exe` | server รับคำสั่ง ตรวจทุกกติกา และส่งสถานะให้ผู้เล่น | เปิดก่อนและเปิดค้าง |
+| `GameClient.exe` | หน้าต่างเกม อ่านปุ่ม ส่งคำสั่ง และวาดภาพ | เปิดหลัง server |
+| `GameWorldTests.exe` | ตรวจสอบกติกาอัตโนมัติสำหรับผู้พัฒนา ไม่มีหน้าต่างเกม | รันจาก PowerShell |
+| `Game.exe` | ไฟล์เก่าที่ไม่มีซอร์ส/คำสั่ง build ปัจจุบันอ้างถึง | ไม่ใช้ |
+| `ClientTest.exe` | ไฟล์เก่าที่ไม่มีซอร์ส/คำสั่ง build ปัจจุบันอ้างถึง | ไม่ใช้ |
+| `ServerTest.exe` | ไฟล์เก่าที่ไม่มีซอร์ส/คำสั่ง build ปัจจุบันอ้างถึง | ไม่ใช้ |
 
-## สำหรับผู้พัฒนา
+ไฟล์ที่ใช้เล่นจริงคือ `GameServer.exe` และ `GameClient.exe` เท่านั้น
 
-ซอร์สโค้ดอยู่ใน `src` แบ่งเป็น 3 ส่วน: กติกาเกมฝั่ง server (`GameWorld`, `Player`), เครือข่าย (`NetworkServer`, `NetworkClient`), และหน้าจอฝั่งผู้เล่น (`Game`, `ClientInput`, `GameRenderer`) รายละเอียดครบทุกไฟล์อยู่ที่ `CODE_OVERVIEW.txt`
 
-หากแก้ C++ แล้วต้องสร้าง `.exe` ใหม่ โปรเจกต์ใช้ C++17, Raylib และ ENet โดย build ผ่าน MSYS2 UCRT64:
+
+## จุดที่แก้ไขได้
+
+แก้ซอร์สแล้วต้อง build `GameClient.exe` ใหม่ตามคำสั่งด้านล่างก่อนเปิดเล่น
+
+| อยากแก้ | ไฟล์/จุดที่แก้ | หมายเหตุ |
+| --- | --- | --- |
+| สีพื้นหลัง หัวข้อ สนาม และแผงด้านขวา | `src/Client/GameRenderer.cpp` ตัวแปร `BackgroundColor`, `HeaderColor`, `ArenaColor`, `SidePanelColor`, `BorderColor` | ใช้สีเทาเป็นหลัก สีสถานะค่อยใช้เฉพาะที่จำเป็น |
+| สีตัวผู้เล่น/คนอื่น/คนล้ม | `GameRenderer.cpp` ฟังก์ชัน `DrawPlayer` | ตัวเราใช้ `LIGHTGRAY`, คนอื่น `GRAY`, คนล้ม `ORANGE` |
+| สีและขนาดแถบ HP | `GameRenderer.cpp` ฟังก์ชัน `DrawPlayerPanel` | แก้สี `DrawRectangle` และความกว้าง 190 ได้ |
+| ตำแหน่ง/ขนาดสนาม | `GameRenderer.cpp` ค่าคงที่ `ArenaX`, `ArenaY`, `ArenaWidth`, `ArenaHeight` | ถ้าเปลี่ยน offset ต้องแก้ offset ใน `ClientInput.cpp` ให้ตรงกัน |
+| ข้อความบนหน้าจอ | `GameRenderer.cpp` ฟังก์ชัน `Draw` | แก้ข้อความหรือเอาบรรทัดที่ไม่ต้องการออกได้ |
+| ปุ่มเดิน | `src/Client/ClientInput.cpp` ฟังก์ชัน `ClientInput::Read` | เปลี่ยน `KEY_W`, `KEY_A`, `KEY_S`, `KEY_D` |
+| ปุ่มเก็บ/ชุบ | `ClientInput.cpp` ใน `collectPressed` และ `reviveHeld` | `IsKeyPressed` คือกดครั้งเดียว, `IsKeyDown` คือกดค้าง |
+| ปุ่มโจมตี | `ClientInput.cpp` เงื่อนไข `IsMouseButtonPressed(MOUSE_BUTTON_LEFT)` | เปลี่ยนเป็นปุ่มเมาส์อื่นได้ |
+| ความเร็วเดิน | `src/Player/Movement/PlayerMovement.cpp` ค่าเริ่มต้น `250.0f` | เป็นกฎฝั่ง server ต้อง build `GameServer.exe` และ test ใหม่ด้วย |
+| ความเสียหายจากการโจมตี | `src/Network/NetworkServer.cpp` ค่า `20.0f` ตอนเรียก `DamagePlayer` | เป็นกฎฝั่ง server ไม่ใช่แค่การวาดจอ |
+| ระยะเก็บของ/ชุบ และเวลา | `src/Game/GameWorld.cpp` ค่าคงที่ `ItemRange`, `ReviveRange`, `ReviveDuration`, `ItemRespawnSeconds` | แก้แล้วต้อง build server และ `GameWorldTests.exe` |
+
+ถ้าแก้เฉพาะสีหรือข้อความ ให้ build client อย่างเดียวก็พอ ถ้าแก้กติกาเกมให้ build server และรัน `GameWorldTests.exe` ตรวจอีกครั้ง
+
+## Build หลังแก้ C++
+
+ใช้ C++17, Raylib และ ENet ผ่าน MSYS2 UCRT64:
 
 ```powershell
 g++ -std=c++17 -I./src src/server_main.cpp src/Network/NetworkServer.cpp src/Game/GameWorld.cpp src/Player/Player.cpp src/Player/Movement/PlayerMovement.cpp src/Player/Health/PlayerHealth.cpp src/Player/Inventory/PlayerInventory.cpp -o GameServer.exe -lenet -lws2_32 -lwinmm
@@ -62,4 +77,4 @@ g++ -std=c++17 -I./src src/main.cpp src/Game/Game.cpp src/Client/ClientInput.cpp
 g++ -std=c++17 -I./src src/Test/GameWorldTests.cpp src/Game/GameWorld.cpp src/Player/Player.cpp src/Player/Movement/PlayerMovement.cpp src/Player/Health/PlayerHealth.cpp src/Player/Inventory/PlayerInventory.cpp -o GameWorldTests.exe
 ```
 
-หลัง build ให้ดับเบิลคลิก `GameWorldTests.exe` หรือรันผ่าน PowerShell ผลที่ถูกต้องคือ `GameWorld rule tests passed`
+บรรทัดแรกสร้าง server (กติกา+เครือข่าย ไม่ต้องวาดจอ), บรรทัดสองสร้าง client (Raylib+เครือข่าย ไม่ตัดสิน HP เอง), บรรทัดสามสร้าง test (กติกาอย่างเดียว จึงไม่มีหน้าต่าง) `-I./src` คือที่อยู่ header, `-o` คือชื่อไฟล์ผลลัพธ์, `-lenet`/`-lraylib` คือไลบรารีที่ต้องเชื่อม ส่วน `.exe` เก่า 3 ตัวด้านบนไม่มีคำสั่ง build ในโปรเจกต์นี้
