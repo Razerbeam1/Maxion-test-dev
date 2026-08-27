@@ -6,21 +6,19 @@
 
 เก็บไฟล์ `.exe` ไว้โฟลเดอร์เดียวกัน แล้วทำตามลำดับนี้
 
-1. ดับเบิลคลิก `GameServer.exe` เปิดค้างไว้ จะเห็น `Dedicated server listening on 27015 (max 16 players)` ใน Terminal
-2. ดับเบิลคลิก `GameClient.exe` เพื่อเปิดหน้าต่างเกม (ผู้เล่นคนแรก)
+1.  `GameServer.exe` เปิดค้างไว้  ใน Terminal
+2.  `GameClient.exe` เพื่อเปิดหน้าต่างเกม 
 3. เปิด `GameClient.exe` ซ้ำเพื่อเพิ่มผู้เล่นในเครื่องเดียวกัน
-4. เลิกเล่นให้ปิดหน้าต่างเกมทั้งหมด แล้วจึงปิด Terminal ของ server
 
-### ปุ่มเล่น
+
+ปุ่มเล่น
 
 | ปุ่ม | การทำงาน |
 | --- | --- |
-| `W A S D` | เดิน |
-| กด `E` หนึ่งครั้ง | เก็บกล่อง Revive Kit เมื่ออยู่ใกล้ |
-| กด `E` ค้าง 2 วินาที | ชุบเพื่อนที่ล้ม เมื่ออยู่ใกล้และมี Kit |
-| คลิกซ้ายผู้เล่นอื่น | โจมตี ลด HP 20 |
-
-ผู้เล่นเริ่ม 100 HP; HP หมดเป็น `DOWNED` จึงเดิน/โจมตี/เก็บของ/ชุบไม่ได้ การชุบสำเร็จทำให้กลับมา 40 HP และใช้ Kit หนึ่งชิ้น กล่องเกิดใหม่แบบสุ่มหลังถูกเก็บ 5 วินาที
+| `W A S D` | ควบคุม |
+| กด `E`  | เก็บกล่อง Revive Kit เมื่ออยู่ใกล้ |
+| Hold `E` | Revivew player |
+| LMB | โจมตี ลด HP 20 |
 
 ## เล่นข้ามเครื่อง
 
@@ -45,19 +43,17 @@
 
 ไฟล์ที่ใช้เล่นจริงคือ `GameServer.exe` และ `GameClient.exe` เท่านั้น
 
+จุดที่ปรับแต่ง
 
-
-## จุดที่แก้ไขได้
-
-แก้ซอร์สแล้วต้อง build `GameClient.exe` ใหม่ตามคำสั่งด้านล่างก่อนเปิดเล่น
+แก้แล้วต้อง build `GameClient.exe` ใหม่ตามคำสั่งด้านล่างก่อนเปิดเล่น
 
 | อยากแก้ | ไฟล์/จุดที่แก้ | หมายเหตุ |
 | --- | --- | --- |
-| สีพื้นหลัง หัวข้อ สนาม และแผงด้านขวา | `src/Client/GameRenderer.cpp` ตัวแปร `BackgroundColor`, `HeaderColor`, `ArenaColor`, `SidePanelColor`, `BorderColor` | ใช้สีเทาเป็นหลัก สีสถานะค่อยใช้เฉพาะที่จำเป็น |
+| สีพื้นหลัง หัวข้อ สนาม และแผงด้านขวา | `src/Client/GameRenderer.cpp` ตัวแปร `BackgroundColor`, `HeaderColor`, `ArenaColor`, `SidePanelColor`, `BorderColor` |
 | สีตัวผู้เล่น/คนอื่น/คนล้ม | `GameRenderer.cpp` ฟังก์ชัน `DrawPlayer` | ตัวเราใช้ `LIGHTGRAY`, คนอื่น `GRAY`, คนล้ม `ORANGE` |
 | สีและขนาดแถบ HP | `GameRenderer.cpp` ฟังก์ชัน `DrawPlayerPanel` | แก้สี `DrawRectangle` และความกว้าง 190 ได้ |
 | ตำแหน่ง/ขนาดสนาม | `GameRenderer.cpp` ค่าคงที่ `ArenaX`, `ArenaY`, `ArenaWidth`, `ArenaHeight` | ถ้าเปลี่ยน offset ต้องแก้ offset ใน `ClientInput.cpp` ให้ตรงกัน |
-| ข้อความบนหน้าจอ | `GameRenderer.cpp` ฟังก์ชัน `Draw` | แก้ข้อความหรือเอาบรรทัดที่ไม่ต้องการออกได้ |
+| ข้อความบนหน้าจอ | `GameRenderer.cpp` ฟังก์ชัน `Draw` 
 | ปุ่มเดิน | `src/Client/ClientInput.cpp` ฟังก์ชัน `ClientInput::Read` | เปลี่ยน `KEY_W`, `KEY_A`, `KEY_S`, `KEY_D` |
 | ปุ่มเก็บ/ชุบ | `ClientInput.cpp` ใน `collectPressed` และ `reviveHeld` | `IsKeyPressed` คือกดครั้งเดียว, `IsKeyDown` คือกดค้าง |
 | ปุ่มโจมตี | `ClientInput.cpp` เงื่อนไข `IsMouseButtonPressed(MOUSE_BUTTON_LEFT)` | เปลี่ยนเป็นปุ่มเมาส์อื่นได้ |
@@ -67,7 +63,7 @@
 
 ถ้าแก้เฉพาะสีหรือข้อความ ให้ build client อย่างเดียวก็พอ ถ้าแก้กติกาเกมให้ build server และรัน `GameWorldTests.exe` ตรวจอีกครั้ง
 
-## Build หลังแก้ C++
+Build  C++
 
 ใช้ C++17, Raylib และ ENet ผ่าน MSYS2 UCRT64:
 
