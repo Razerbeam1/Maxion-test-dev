@@ -4,6 +4,12 @@
 
 namespace
 {
+// โทนหลักของ client ใช้สีเทาเป็นพื้น สีที่เหลือสงวนไว้บอกสถานะที่สำคัญ
+constexpr Color BackgroundColor = {24, 24, 24, 255};
+constexpr Color HeaderColor = {36, 36, 36, 255};
+constexpr Color ArenaColor = {30, 30, 30, 255};
+constexpr Color SidePanelColor = {34, 34, 34, 255};
+constexpr Color BorderColor = {76, 76, 76, 255};
 constexpr float ArenaX = 40.0f;
 constexpr float ArenaY = 110.0f;
 constexpr float ArenaWidth = 880.0f;
@@ -15,14 +21,14 @@ std::string PlayerName(int id) { return "PLAYER " + std::to_string(id + 1); }
 void GameRenderer::Draw(const NetworkMatchSnapshot* snapshot, bool connected, int localPlayerId)
 {
     BeginDrawing();
-    ClearBackground({8, 16, 25, 255});
-    DrawRectangleRounded({40, 25, 1160, 58}, 0.12f, 8, {16, 29, 43, 255});
+    ClearBackground(BackgroundColor);
+    DrawRectangleRounded({40, 25, 1160, 58}, 0.12f, 8, HeaderColor);
     DrawText("CO-OP ARENA", 65, 48, 20, RAYWHITE);
     DrawText("SERVER  TICK", 350, 50, 16, SKYBLUE);
     DrawText(connected ? "CONNECTED" : "DISCONNECTED", 1030, 50, 16, connected ? LIME : ORANGE);
 
-    DrawRectangleRounded({ArenaX, ArenaY, ArenaWidth, ArenaHeight}, 0.03f, 6, {13, 29, 43, 255});
-    DrawRectangleLinesEx({ArenaX, ArenaY, ArenaWidth, ArenaHeight}, 2, {43, 65, 84, 255});
+    DrawRectangleRounded({ArenaX, ArenaY, ArenaWidth, ArenaHeight}, 0.03f, 6, ArenaColor);
+    DrawRectangleLinesEx({ArenaX, ArenaY, ArenaWidth, ArenaHeight}, 2, BorderColor);
 
     if (snapshot != nullptr)
     {
@@ -52,7 +58,7 @@ void GameRenderer::Draw(const NetworkMatchSnapshot* snapshot, bool connected, in
         }
     }
 
-    DrawRectangleRounded({950, 110, 250, 570}, 0.04f, 6, {14, 27, 40, 255});
+    DrawRectangleRounded({950, 110, 250, 570}, 0.04f, 6, SidePanelColor);
     DrawText("TEAM STATUS", 975, 130, 20, RAYWHITE);
     if (snapshot != nullptr)
     {
@@ -69,7 +75,8 @@ void GameRenderer::Draw(const NetworkMatchSnapshot* snapshot, bool connected, in
 void GameRenderer::DrawPlayer(const NetworkPlayerSnapshot& player, int localPlayerId) const
 {
     const float x = ArenaX + player.x, y = ArenaY + player.y;
-    const Color color = player.playerId == localPlayerId ? SKYBLUE : Color{255, 116, 110, 255};
+    // ใช้สีเพียงสีเดียวแยกผู้เล่นของเราออกจากคนอื่น; Downed ใช้ส้มเพื่อให้เห็นสถานะ
+    const Color color = player.playerId == localPlayerId ? LIGHTGRAY : GRAY;
     DrawCircle(static_cast<int>(x + 20), static_cast<int>(y + 20), 24, Fade(color, 0.25f));
     DrawCircle(static_cast<int>(x + 20), static_cast<int>(y + 20), 19, player.lifeState == 1 ? ORANGE : color);
     DrawText(TextFormat("P%d  %.0f HP", player.playerId + 1, player.health), static_cast<int>(x - 8), static_cast<int>(y + 50), 15, RAYWHITE);
@@ -80,8 +87,8 @@ void GameRenderer::DrawPlayerPanel(const NetworkPlayerSnapshot& player, int y) c
 {
     DrawText(PlayerName(player.playerId).c_str(), 975, y, 17, RAYWHITE);
     DrawText(LifeText(player.lifeState), 975, y + 23, 15, player.lifeState == 1 ? ORANGE : SKYBLUE);
-    DrawRectangle(975, y + 48, 190, 13, {37, 55, 70, 255});
-    DrawRectangle(975, y + 48, static_cast<int>(190 * player.health / player.maxHealth), 13, SKYBLUE);
+    DrawRectangle(975, y + 48, 190, 13, {65, 65, 65, 255});
+    DrawRectangle(975, y + 48, static_cast<int>(190 * player.health / player.maxHealth), 13, LIGHTGRAY);
     DrawText(TextFormat("%.0f / %.0f", player.health, player.maxHealth), 1080, y + 65, 13, LIGHTGRAY);
     DrawText(player.hasReviveItem ? "REVIVE KIT: READY" : "REVIVE KIT: EMPTY", 975, y + 40, 8, player.hasReviveItem ? GOLD : GRAY);
 }
