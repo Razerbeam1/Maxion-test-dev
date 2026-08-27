@@ -8,8 +8,9 @@
 
 ## วิธีเล่นในเครื่องเดียวกัน
 
-1.  `GameServer.exe` 
-2.  `GameClient.exe` 
+1.  Open `GameServer.exe` 
+2.  Open`GameClient.exe` = Player 1
+3.  Open`GameClient.exe` = Player 2
 
 
 ## ปุ่มควบคุม
